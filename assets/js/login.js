@@ -1,58 +1,75 @@
 document.addEventListener("DOMContentLoaded", () => {
-    function loadComponent(id, file) {
+
+    // LOGIN BUTTON HANDLER
+    const submitBtn = document.getElementById("submitBtn");
+    if (submitBtn) {
+        const loginForm = document.querySelector(".login-form");
+        if (loginForm) {
+            loginForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                const usernameField = document.getElementById("teacherId")?.value || "";
+                const passwordField = document.getElementById("password")?.value || "";
+
+                if (!usernameField || !passwordField) {
+                    alert("Please enter both Teacher ID and Password.");
+                    return;
+                }
+
+                if(usernameField==="admin" && passwordField==="Admin@123") {
+                    window.location.href = "./admin/schools.html";
+                }
+                else {
+                    alert("User not Found");
+                }
+            });
+        }
+    }
+
+    // PASSWORD TOGGLE HANDLER
+    const togglePasswordBtn = document.getElementById("togglePassword");
+    if (togglePasswordBtn) {
+        togglePasswordBtn.addEventListener("click", function () {
+            const passwordInput = document.getElementById("password");
+            const icon = this.querySelector("i");
+
+            if (passwordInput && icon) {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.classList.replace("fa-eye", "fa-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    icon.classList.replace("fa-eye-slash", "fa-eye");
+                }
+            }
+        });
+    }
+
+    function loadComponent(id, file, callback) {
         fetch(file)
             .then(response => response.text())
             .then(data => {
-                document.getElementById(id).innerHTML = data;
-                attachNavbarEventListeners();
-            });
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerHTML = data;
+                    if (callback) callback();
+                }
+            })
+            .catch(error => console.error("Component load error:", error));
     }
-
-    // function attachNavbarEventListeners() {
-    //     const logoutBtn = document.getElementById("logoutBtn");
-    //     if (logoutBtn) {
-    //         logoutBtn.addEventListener("click", () => {
-    //             localStorage.clear();
-    //             window.location.href = "../index.html";
-    //         });
-    //     }
-    // }
 
     function highlightActiveLink() {
         const footer = document.querySelector("footer");
         function checkScrollbar() {
             if (document.body.scrollHeight <= window.innerHeight) {
-                footer.classList.add("fixed");
+                footer?.classList.add("fixed");
             } else {
-                footer.classList.remove("fixed");
+                footer?.classList.remove("fixed");
             }
         }
         checkScrollbar();
         window.addEventListener("resize", checkScrollbar);
-        // const currentPath = window.location.pathname;
-        // const navLinks = document.querySelectorAll("nav ul li a");
-        // navLinks.forEach(link => {
-        //     if (currentPath.endsWith(link.getAttribute("href"))) {
-        //         link.classList.add("active");
-        //     }
-        // });
     }
 
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordInput = document.getElementById('password');
-        const icon = this.querySelector('i');
-
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
-
-    loadComponent("footer", "../components/footer.html");
-    setTimeout(highlightActiveLink, 100);
+    loadComponent("footer", "../components/footer.html", highlightActiveLink);
 });
