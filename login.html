@@ -9,6 +9,71 @@
     <link rel="stylesheet" href="./assets/css/root.css">
     <link rel="stylesheet" href="./assets/css/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script>
+        function validateAccessToken(apiUrl, onSuccess, onFail) {
+            const accessToken = localStorage.getItem("access");
+            const refreshToken = localStorage.getItem("refresh");
+
+            if (!accessToken || !refreshToken) {
+                console.error("Tokens missing. Redirecting to login.");
+                if (onFail) onFail();
+                return;
+            }
+
+            fetch(apiUrl, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    // Try refreshing token
+                    return refreshAccessToken(refreshToken)
+                        .then(success => {
+                            if (success) {
+                                return validateAccessToken(apiUrl, onSuccess, onFail); // Retry
+                            } else {
+                                throw new Error("Token refresh failed");
+                            }
+                        });
+                } else {
+                    throw new Error("Token invalid");
+                }
+            })
+            .then(data => {
+                if (data && onSuccess) onSuccess(data);
+            })
+            .catch(err => {
+                console.error("Access token check failed:", err);
+                if (onFail) onFail();
+            });
+        }
+        function refreshAccessToken(refreshToken) {
+            return fetch("http://127.0.0.1:8000/api/token/refresh/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ refresh: refreshToken })
+            })
+            .then(response => {
+                if (response.status === 200) return response.json();
+                else throw new Error("Refresh failed");
+            })
+            .then(data => {
+                localStorage.setItem("access", data.access);
+                return true;
+            })
+            .catch(err => {
+                console.error("Refresh error:", err);
+                return false;
+            });
+        }
+
+    </script>
 </head>
 
 <body>
@@ -30,8 +95,8 @@
                     <h1>EduMet Login</h1>
                 </div>
                 <div class="form-group">
-                    <label for="teacherId">Teacher ID</label>
-                    <input type="text" id="teacherId" class="form-control" placeholder="Enter your teacher ID" required>
+                    <label for="teacherMail">Email</label>
+                    <input type="email" id="teacherMail" class="form-control" placeholder="Enter your mail address" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
@@ -49,6 +114,13 @@
 
     <div id="footer"></div>
 
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>    
+
+    <script src="./assets/js/data.js"></script>
     <script src="./assets/js/login.js"></script>
 </body>
 

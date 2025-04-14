@@ -1,44 +1,55 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const baseUrl = BE_URL;
+    const loginForm = document.querySelector(".login-form");
+    const emailField = document.getElementById("teacherMail");
+    const passwordField = document.getElementById("password");
+    const togglePasswordBtn = document.getElementById("togglePassword");
+    
+    function login() {
+        loginForm.addEventListener("submit", function (event) {
+            event.preventDefault();
 
-    // LOGIN BUTTON HANDLER
-    const submitBtn = document.getElementById("submitBtn");
-    if (submitBtn) {
-        const loginForm = document.querySelector(".login-form");
-        if (loginForm) {
-            loginForm.addEventListener("submit", function (event) {
-                event.preventDefault();
-
-                const usernameField = document.getElementById("teacherId")?.value || "";
-                const passwordField = document.getElementById("password")?.value || "";
-
-                if (!usernameField || !passwordField) {
-                    alert("Please enter both Teacher ID and Password.");
-                    return;
-                }
-
-                if(usernameField==="admin" && passwordField==="Admin@123") {
-                    window.location.href = "./admin/schools.html";
-                }
-                else {
-                    alert("User not Found");
-                }
-            });
-        }
+            const email = emailField.value;
+            const password = passwordField.value;
+            if (!email || !password) {
+                alert("Please enter both Teacher ID and Password.");
+                return;
+            }
+            showLoader();
+            fetch(`${baseUrl}/login/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            })
+                .then(handleResponse)
+                .then(data => {
+                    localStorage.setItem("access_token", data.access);
+                    localStorage.setItem("refresh_token", data.refresh);
+                    if (data.type === "admin") {
+                        window.location.href = "./admin/schools.html";
+                    }
+                })
+                .catch(showError)
+                .finally(() => {
+                    hideLoader();
+                });
+        });
     }
 
     // PASSWORD TOGGLE HANDLER
-    const togglePasswordBtn = document.getElementById("togglePassword");
     if (togglePasswordBtn) {
         togglePasswordBtn.addEventListener("click", function () {
-            const passwordInput = document.getElementById("password");
+            const passwordField = document.getElementById("password");
             const icon = this.querySelector("i");
 
-            if (passwordInput && icon) {
-                if (passwordInput.type === "password") {
-                    passwordInput.type = "text";
+            if (passwordField && icon) {
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
                     icon.classList.replace("fa-eye", "fa-eye-slash");
                 } else {
-                    passwordInput.type = "password";
+                    passwordField.type = "password";
                     icon.classList.replace("fa-eye-slash", "fa-eye");
                 }
             }
@@ -71,5 +82,26 @@ document.addEventListener("DOMContentLoaded", () => {
         window.addEventListener("resize", checkScrollbar);
     }
 
+    function handleResponse(response) {
+        return response.json().then((data) => {
+            if (!response.ok) {
+                throw new Error(data.error || data.message || `HTTP error! Status: ${response.status}`);
+            }
+            return data;
+        });
+    }
+
+    function showError(error) {
+        console.error("Error: ", error);
+        const errorMessage = error.message || "An error occurred.";
+        if (errorMessage.includes("401")) {
+            alert("Session expired. Redirecting to login...");
+            window.location.href = "../index.html";
+        } else {
+            alert(errorMessage);
+        }
+    }
+
     loadComponent("footer", "../components/footer.html", highlightActiveLink);
+    login();
 });
