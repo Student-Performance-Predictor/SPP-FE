@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailField = document.getElementById("teacherMail");
     const passwordField = document.getElementById("password");
     const togglePasswordBtn = document.getElementById("togglePassword");
-    
+
     function login() {
         loginForm.addEventListener("submit", function (event) {
             event.preventDefault();
@@ -82,25 +82,35 @@ document.addEventListener("DOMContentLoaded", () => {
         window.addEventListener("resize", checkScrollbar);
     }
 
+    // Handle API response
     function handleResponse(response) {
-        return response.json().then((data) => {
-            if (!response.ok) {
-                throw new Error(data.error || data.message || `HTTP error! Status: ${response.status}`);
-            }
-            return data;
-        });
+        if (!response.ok) {
+            return response.json().then(error => {
+                throw error;
+            });
+        }
+        return response.json();
     }
 
+    // Show error messages
     function showError(error) {
         console.error("Error: ", error);
-        const errorMessage = error.message || "An error occurred.";
-        if (errorMessage.includes("401")) {
+        let errorMessage = "An error occurred.";
+        if (error?.response?.status === 401) {
             alert("Session expired. Redirecting to login...");
             window.location.href = "../index.html";
-        } else {
-            alert(errorMessage);
+            return;
         }
-    }
+        if (error?.error) {
+            errorMessage = error.error;
+        } else if (error?.message) {
+            errorMessage = error.message;
+        } else if (typeof error === 'string') {
+            errorMessage = error;
+        }
+    
+        alert(errorMessage);
+    }  
 
     loadComponent("footer", "../components/footer.html", highlightActiveLink);
     login();
