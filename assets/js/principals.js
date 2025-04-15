@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // DOM elements
+    const baseUrl = BE_URL;
+    const token = localStorage.getItem('access_token');
     const sidebar = document.querySelector('.sidebar');
     const toggleBtn = document.querySelector('.sidebar-toggle');
     const principalsTableBody = document.getElementById('principalsTableBody');
@@ -10,19 +11,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeButtons = document.querySelectorAll('.close-btn');
     const cancelPrincipalBtn = document.getElementById('cancelPrincipalBtn');
     const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-    const savePrincipalBtn = document.getElementById('savePrincipalBtn');
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
     const searchInput = document.getElementById('searchPrincipal');
     const principalForm = document.getElementById('principalForm');
     const schoolDropdown = document.getElementById('principalSchool');
-
+    let principals = [];
     let currentPrincipalId = null;
 
     // Initialize the page
     function init() {
         loadComponent('../components/admin_navbar.html', 'sidebar');
         loadComponent('../components/footer.html', 'footer');
-        renderPrincipalsTable();
+        fetchPrincipals();
         setupEventListeners();
         populateSchoolDropdown();
     }
@@ -43,15 +43,86 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // Fetch all principals from API
+    function fetchPrincipals() {
+        showLoader();
+        fetch(`${baseUrl}/getAllPrincipals/`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(handleResponse)
+            .then(data => {
+                principals = data;
+                renderPrincipalsTable();
+            })
+            .catch(showError)
+            .finally(() => {
+                hideLoader();
+            });
+    }
+
+    // Fetch a specific principal
+    function fetchPrincipal(principalId) {
+        showLoader();
+        return fetch(`${baseUrl}/viewPrincipal/${principalId}/`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(handleResponse)
+            .catch(showError)
+            .finally(() => {
+                hideLoader();
+            });
+    }
+
+    // Fetch a specific school
+    function fetchSchool(schoolId) {
+        showLoader();
+        return fetch(`${baseUrl}/viewSchool/${schoolId}/`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(handleResponse)
+            .catch(showError)
+            .finally(() => {
+                hideLoader();
+            });
+    }
+
     // Populate school dropdown
     function populateSchoolDropdown() {
         schoolDropdown.innerHTML = '<option value="">Select School</option>';
-        schools.forEach(school => {
-            const option = document.createElement('option');
-            option.value = school.id;
-            option.textContent = school.name;
-            schoolDropdown.appendChild(option);
-        });
+        showLoader();
+        fetch(`${baseUrl}/getSchoolNames/`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(handleResponse)
+            .then(data => {
+                schools = data.schools;
+                data.schools.forEach((school) => {
+                    const option = document.createElement('option');
+                    option.value = school.id;
+                    option.textContent = school.name;
+                    schoolDropdown.appendChild(option);
+                });
+            })
+            .catch(showError)
+            .finally(() => {
+                hideLoader();
+            });
     }
 
     // Render principals table
@@ -132,11 +203,14 @@ document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('click', (e) => {
             if (e.target.closest('.view-btn')) {
                 const principalId = parseInt(e.target.closest('.view-btn').getAttribute('data-id'));
-                const principal = principals.find(p => p.id === principalId);
-                if (principal) {
-                    populateViewModal(principal);
-                    viewModal.style.display = 'flex';
-                }
+                fetchPrincipal(principalId)
+                    .then(principal => {
+                        if (principal) {
+                            populateViewModal(principal);
+                            viewModal.style.display = 'flex';
+                        }
+                    })
+                    .catch(showError);
             }
         });
 
@@ -144,13 +218,17 @@ document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('click', (e) => {
             if (e.target.closest('.edit-btn')) {
                 const principalId = parseInt(e.target.closest('.edit-btn').getAttribute('data-id'));
-                const principal = principals.find(p => p.id === principalId);
-                if (principal) {
-                    currentPrincipalId = principalId;
-                    document.getElementById('principalModalTitle').textContent = 'Edit Principal';
-                    populateForm(principal);
-                    formModal.style.display = 'flex';
-                }
+                currentPrincipalId = principalId;
+                fetchPrincipal(principalId)
+                    .then(principal => {
+                        if (principal) {
+                            document.getElementById('principalModalTitle').textContent = 'Edit Principal';
+                            populateForm(principal);
+                            formModal.style.display = 'flex';
+
+                        }
+                    })
+                    .catch(showError);
             }
         });
 
@@ -200,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h3>${principal.name}</h3>
                 <p><strong>Email:</strong> ${principal.email}</p>
                 <p><strong>Phone:</strong> ${principal.phone}</p>
-                <p><strong>Date of Birth:</strong> ${principal.dob}</p>
+                <p><strong>Date of Birth:</strong> ${principal.date_of_birth.split('-').reverse().join('-')}</p>
                 <p><strong>Assigned School:</strong> ${principal.school}</p>
             </div>
             
@@ -218,73 +296,86 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('principalName').value = principal.name;
         document.getElementById('principalEmail').value = principal.email;
         document.getElementById('principalPhone').value = principal.phone;
-        document.getElementById('principalDob').value = principal.dob;
+        document.getElementById('principalDob').value = principal.date_of_birth;
         document.getElementById('principalAddress').value = principal.address;
         document.getElementById('principalCity').value = principal.city;
         document.getElementById('principalState').value = principal.state;
         document.getElementById('principalPincode').value = principal.pincode;
-        document.getElementById('principalSchool').value = principal.schoolId;
+        document.getElementById('principalSchool').value = principal.school_id;
     }
 
     // Save principal (add or update)
     function savePrincipal() {
         const id = document.getElementById('principalId').value;
         const schoolId = parseInt(document.getElementById('principalSchool').value);
-        const school = schools.find(s => s.id === schoolId) || { name: 'Unknown' };
-
-        const principalData = {
-            name: document.getElementById('principalName').value,
-            email: document.getElementById('principalEmail').value,
-            phone: document.getElementById('principalPhone').value,
-            dob: document.getElementById('principalDob').value,
-            address: document.getElementById('principalAddress').value,
-            city: document.getElementById('principalCity').value,
-            state: document.getElementById('principalState').value,
-            pincode: document.getElementById('principalPincode').value,
-            schoolId: schoolId,
-            school: school.name
-        };
-
-        if (id) {
-            // Update existing principal
-            const index = principals.findIndex(p => p.id === parseInt(id));
-            if (index !== -1) {
-                principals[index] = { ...principals[index], ...principalData };
-            }
-        } else {
-            // Add new principal
-            const newId = principals.length > 0 ? Math.max(...principals.map(p => p.id)) + 1 : 1;
-            principals.push({ id: newId, ...principalData });
-        }
-
-        renderPrincipalsTable();
-        formModal.style.display = 'none';
+        fetchSchool(schoolId)
+            .then(school => {
+                const principalData = {
+                    name: document.getElementById('principalName').value,
+                    email: document.getElementById('principalEmail').value,
+                    phone: document.getElementById('principalPhone').value,
+                    date_of_birth: document.getElementById('principalDob').value.split('-').reverse().join('-'),
+                    address: document.getElementById('principalAddress').value,
+                    city: document.getElementById('principalCity').value,
+                    state: document.getElementById('principalState').value,
+                    pincode: document.getElementById('principalPincode').value,
+                    school: school.name,
+                    school_id: school.id
+                };
+                const url = id ? `${baseUrl}/updatePrincipal/${id}/` : `${baseUrl}/addPrincipal/`;
+                const method = id ? 'PUT' : 'POST';
+                showLoader();
+                fetch(url, {
+                    method: method,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(principalData)
+                })
+                    .then(handleResponse)
+                    .then((response) => {
+                        alert(response.message);
+                        fetchPrincipals();
+                        formModal.style.display = 'none';
+                    })
+                    .catch(showError)
+                    .finally(() => {
+                        hideLoader();
+                    });
+            })
+            .catch(showError);
     }
 
     // Delete principal
     function deletePrincipal(id) {
-        const index = principals.findIndex(p => p.id === id);
-        if (index !== -1) {
-            principals.splice(index, 1);
-            renderPrincipalsTable();
-        }
+        showLoader();
+        fetch(`${baseUrl}/deletePrincipal/${id}/`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(handleResponse)
+            .then((response) => {
+                alert(response.message);
+                fetchPrincipals();
+            })
+            .catch(showError)
+            .finally(() => {
+                hideLoader();
+            });
     }
-
-    // Check if footer should be fixed or static
+    
+    // Event Listeners for navbar and footer
     function addEventListenerFunc() {
         const currentPath = window.location.pathname.split(/[?#]/)[0];
-
-        // Get all nav items
         const navItems = document.querySelectorAll('.nav-item');
-
-        // Remove active class from all items
         navItems.forEach(item => {
             item.classList.remove('active');
         });
-
-        // Find matching item and make it active
         navItems.forEach(item => {
-            // Extract the path from the onclick handler
             const onclickAttr = item.getAttribute('onclick');
             if (onclickAttr) {
                 const pathMatch = onclickAttr.match(/window\.location\.href\s*=\s*'([^']*)'/);
@@ -298,12 +389,48 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         const footer = document.querySelector('footer');
         if (!footer) return;
-
         footer.classList.toggle(
             'fixed',
             document.body.scrollHeight <= window.innerHeight
         );
+        const logoutBtn = document.getElementById("logout-btn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                localStorage.clear();
+                window.location.href = "../login.html";
+            });
+        }
     }
+
+    // Handle API response
+    function handleResponse(response) {
+        if (!response.ok) {
+            return response.json().then(error => {
+                throw error;
+            });
+        }
+        return response.json();
+    }
+
+    // Show error messages
+    function showError(error) {
+        console.error("Error: ", error);
+        let errorMessage = "An error occurred.";
+        if (error?.response?.status === 401) {
+            alert("Session expired. Redirecting to login...");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (error?.error) {
+            errorMessage = error.error;
+        } else if (error?.message) {
+            errorMessage = error.message;
+        } else if (typeof error === 'string') {
+            errorMessage = error;
+        }
+    
+        alert(errorMessage);
+    }    
 
     // Initialize the page
     init();
