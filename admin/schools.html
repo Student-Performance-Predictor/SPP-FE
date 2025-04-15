@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMet - School Dashboard</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/root.css">
+    <link rel="stylesheet" href="../assets/css/schools.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../assets/js/validate.js"></script>
+</head>
+
+<body>
+    <!-- Sidebar Toggle (visible only on mobile) -->
+    <button class="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar will be loaded here -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>School Management</h1>
+        </div>
+
+        <!-- Search and Add School -->
+        <div class="search-add-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchSchool" placeholder="Search schools...">
+            </div>
+            <button class="btn btn-primary" id="addSchoolBtn">
+                <i class="fas fa-plus"></i> Add School
+            </button>
+        </div>
+
+        <!-- Schools Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Schools List</h2>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>School Name</th>
+                            <th>Type</th>
+                            <th>Board</th>
+                            <th>Location</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schoolsTableBody">
+                        <!-- Schools will be loaded here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- View School Modal -->
+    <div class="modal" id="viewSchoolModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>School Details</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Add/Edit School Modal -->
+    <div class="modal" id="schoolFormModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="schoolModalTitle">Add New School</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="schoolForm">
+                    <input type="hidden" id="schoolId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="schoolName">School Name</label>
+                            <input type="text" id="schoolName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolType">Type</label>
+                            <select id="schoolType" class="form-control" required>
+                                <option value="">Select Type</option>
+                                <option value="Government">Government</option>
+                                <option value="Private">Private</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="schoolBoard">Board</label>
+                            <select id="schoolBoard" class="form-control" required>
+                                <option value="">Select Board</option>
+                                <option value="CBSE">CBSE</option>
+                                <option value="ICSE">ICSE</option>
+                                <option value="NIOS">NIOS</option>
+                                <option value="State">State</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolMedium">Medium</label>
+                            <select id="schoolMedium" class="form-control" required>
+                                <option value="">Select Medium</option>
+                                <option value="English">English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="schoolEmail">Email</label>
+                        <input type="email" id="schoolEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="schoolPhone">Phone</label>
+                        <input type="tel" id="schoolPhone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="schoolAddress">Address</label>
+                        <input type="text" id="schoolAddress" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="schoolCity">City</label>
+                            <input type="text" id="schoolCity" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolState">State</label>
+                            <input type="text" id="schoolState" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolPincode">Pincode</label>
+                            <input type="text" id="schoolPincode" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="schoolRegNumber">Registration Number</label>
+                        <input type="text" id="schoolRegNumber" class="form-control" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-danger" id="cancelSchoolBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveSchoolBtn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteConfirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Deletion</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this school? This action cannot be undone.</p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script src="../assets/js/data.js"></script>
+    <script src="../assets/js/schools.js"></script>
+</body>
+
+</html>

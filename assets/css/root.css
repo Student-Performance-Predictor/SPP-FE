@@ -1,10 +1,14 @@
 :root {
-    --primary-blue: #1565C0;
-    --primary-blue-light: #1E88E5;
-    --secondary-orange: #FB8C00;
-    --secondary-orange-light: #FF9800;
-    --bg-gray: #F5F5F5;
+    --primary-blue: #1565c0;
+    --primary-blue-light: #1e88e5;
+    --secondary-orange: #fb8c00;
+    --secondary-orange-light: #ff9800;
+    --bg-gray: #f5f5f5;
     --text-dark: #212121;
     --text-medium: #424242;
-    --white: #FFFFFF;
+    --white: #ffffff;
+    --red: #e53935;
+    --red-light: #ef5350;
+    --green: #43a047;
+    --green-light: #4caf50;
 }

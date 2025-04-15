@@ -30,8 +30,8 @@
                     <h1>EduMet Login</h1>
                 </div>
                 <div class="form-group">
-                    <label for="teacherId">Teacher ID</label>
-                    <input type="text" id="teacherId" class="form-control" placeholder="Enter your teacher ID" required>
+                    <label for="teacherMail">Email</label>
+                    <input type="email" id="teacherMail" class="form-control" placeholder="Enter your mail address" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
@@ -42,13 +42,20 @@
                                 class="fa-regular fa-eye"></i></button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Sign In</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary">Sign In</button>
             </form>
         </div>
     </div>
 
     <div id="footer"></div>
 
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script src="./assets/js/data.js"></script>
     <script src="./assets/js/login.js"></script>
 </body>
 

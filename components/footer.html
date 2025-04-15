@@ -8,11 +8,24 @@
         font-weight: bold;
         margin-top: auto;
         position: relative;
+        width: 100%;
     }
+
     footer.fixed {
         position: fixed;
         bottom: 0;
         width: 100%;
+    }
+
+    @media (max-width: 992px) {
+        footer {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        footer.fixed {
+            width: 100%;
+        }
     }
 </style>
 
