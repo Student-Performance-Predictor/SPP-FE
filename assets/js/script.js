@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", ()=> {
+document.addEventListener("DOMContentLoaded", () => {
     function loadComponent(id, file) {
         fetch(file)
             .then(response => response.text())
@@ -21,14 +21,14 @@ document.addEventListener("DOMContentLoaded", ()=> {
     }
 
     document.querySelectorAll('#loginBtn, #heroLoginBtn, #ctaLoginBtn, .mobile-login-btn, .role-card .login-btn').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             window.location.href = '../login.html';
         });
     });
 
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
-    mobileMenuBtn.addEventListener('click', function() {
+    mobileMenuBtn.addEventListener('click', function () {
         mobileMenu.classList.toggle('active');
     });
 
@@ -38,21 +38,21 @@ document.addEventListener("DOMContentLoaded", ()=> {
             const target = +counter.getAttribute('data-target');
             const duration = 2000; // 2 seconds
             const startTime = performance.now();
-            
+
             const updateCounter = (currentTime) => {
                 const elapsedTime = currentTime - startTime;
                 const progress = Math.min(elapsedTime / duration, 1);
                 const value = Math.floor(progress * target);
-                
+
                 counter.textContent = value;
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(updateCounter);
                 } else {
                     counter.classList.add('counting');
                 }
             };
-            
+
             requestAnimationFrame(updateCounter);
         });
     }
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", ()=> {
     observer.observe(statsSection);
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
             document.querySelector(this.getAttribute('href')).scrollIntoView({
                 behavior: 'smooth'
