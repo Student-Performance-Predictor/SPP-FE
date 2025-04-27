@@ -30,6 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (data.type === "admin") {
                         window.location.href = "./admin/schools.html";
                     }
+                    if (data.type === "principal") {
+                        window.location.href = `./principals/teachers.html?id=${data.id}`;
+                    }                    
                 })
                 .catch(showError)
                 .finally(() => {
