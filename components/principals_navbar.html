@@ -53,20 +53,22 @@
         text-align: center;
     }
 
-    .nav-item.active,
+    .nav-item.active {
+        color: var(--primary-blue-light);
+        text-decoration: underline;
+    }
+
     .nav-item:hover {
-        background-color: var(--primary-blue-light);
-        color: var(--white);
+        color: var(--secondary-orange-light);
     }
 
     .logout-item {
-        background-color: var(--red);
-        color: var(--white);
+        color: var(--red);
     }
 
     .logout-item:hover {
-        background-color: var(--red-light);
-        color: var(--white);
+        text-decoration: underline;
+        color: var(--red);
     }
 
     .profile-img {
@@ -160,25 +162,40 @@
     </div>
 
     <div class="nav-menu">
+        <div class="nav-item" onclick="window.location.href='../principals/dashboard.html'">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
         <div class="nav-item" onclick="window.location.href='../principals/teachers.html'">
             <i class="fas fa-chalkboard-teacher"></i>
             <span>Class Teachers</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='../principals/randomPredict.html'">
+            <i class="fas fa-user-secret"></i>
+            <span>Anonymous Predict</span>
         </div>
         <div class="nav-item logout-item" id="logout-btn" onclick="window.location.href='../login.html'">
             <i class="fas fa-sign-out-alt"></i>
             <span>Logout</span>
         </div>
     </div>
-
-    <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Profile" class="profile-img"
-        onclick="window.location.href='profile.html'">
+    
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMggZhOIH1vXmnv0bCyBu8iEuYQO-Dw1kpp7_v2mwhw_SKksetiK0e4VWUak3pm-v-Moc&usqp=CAU" id="profileImage" alt="Profile"  class="profile-img" onclick="window.location.href='../principals/profile.html'">
 </nav>
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
+    <div class="nav-item" onclick="window.location.href='../principals/dashboard.html'">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </div>
     <div class="nav-item" onclick="window.location.href='../principals/teachers.html'">
         <i class="fas fa-chalkboard-teacher"></i>
         <span>Class Teachers</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='../principals/randomPredict.html'">
+        <i class="fas fa-user-secret"></i>
+        <span>Anonymous Predict</span>
     </div>
     <div class="nav-item logout-item" id="logout-btn" onclick="window.location.href='../login.html'">
         <i class="fas fa-sign-out-alt"></i>
