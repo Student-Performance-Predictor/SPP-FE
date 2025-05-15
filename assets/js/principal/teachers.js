@@ -136,7 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Render teachers table
     function renderTeachersTable(filteredTeachers = null) {
-        const data = filteredTeachers || teachers;
+        const teachersData = filteredTeachers || teachers;
+        const data = teachersData.sort((a,b) => a.class_assigned - b.class_assigned);
         teachersTableBody.innerHTML = "";
 
         if (data.length === 0) {
