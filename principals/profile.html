@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMet - Principal Profile</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/root.css">
+    <link rel="stylesheet" href="../assets/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../assets/js/validate.js"></script>
+</head>
+
+<body>
+    <div id="principal_navbar"></div>
+
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Principal Profile</h1>
+
+
+        <div class="profile-section">
+            <h2 class="section-title">Personal Information</h2>
+
+            <div class="profile-image-container">
+                <img id="profileImage"
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMggZhOIH1vXmnv0bCyBu8iEuYQO-Dw1kpp7_v2mwhw_SKksetiK0e4VWUak3pm-v-Moc&usqp=CAU"
+                    alt="Profile Image" class="profile-image">
+                <div class="image-upload">
+                    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="document.getElementById('imageUpload').click()">Change Photo</button>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="disabled-input" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth</label>
+                    <input type="date" id="date_of_birth">
+                </div>
+
+                <div class="form-group">
+                    <label for="school">School</label>
+                    <input type="text" id="school" class="disabled-input" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city">
+                </div>
+
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state">
+                </div>
+
+                <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="text" id="pincode">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-danger" id="cancelBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveProfileBtn">
+                    <span id="saveBtnText">Save Changes</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2 class="section-title">Change Password</h2>
+
+            <div class="profile-grid">
+                <div class="form-group">
+                    <label for="current_password">Current Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="current_password" required>
+                        <button type="button" class="password-toggle" data-target="current_password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password">New Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="new_password" required>
+                        <button type="button" class="password-toggle" data-target="new_password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="confirm_password" required>
+                        <button type="button" class="password-toggle" data-target="confirm_password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-success" id="changePasswordBtn">
+                    <span id="passwordBtnText">Change Password</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="../assets/js/data.js"></script>
+    <script src="../assets/js/principal/profilePrincipal.js"></script>
+</body>
+
+</html>
