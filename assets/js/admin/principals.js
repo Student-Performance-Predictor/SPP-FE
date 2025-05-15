@@ -127,7 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Render principals table
     function renderPrincipalsTable(filteredPrincipals = null) {
-        const data = filteredPrincipals || principals;
+        const principalsData = filteredPrincipals || principals;
+        const data = principalsData.sort((a,b) => a.id - b.id);
         principalsTableBody.innerHTML = '';
 
         if (data.length === 0) {

@@ -85,7 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Render schools table
     function renderSchoolsTable(filteredSchools = null) {
-        const data = filteredSchools || schools;
+        const schoolsData = filteredSchools || schools;
+        const data = schoolsData.sort((a, b) => a.id - b.id);
         schoolsTableBody.innerHTML = '';
 
         if (data.length === 0) {
