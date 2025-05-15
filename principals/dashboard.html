@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMet - Principal</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/root.css">
+    <link rel="stylesheet" href="../assets/css/principal/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../assets/js/validate.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="principal_navbar"></div>
+
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="principal-info">
+                <img id="principalAvatar" class="principal-avatar" src="" alt="Principal Avatar">
+                <div class="principal-details">
+                    <h2 id="principalName">Loading...</h2>
+                    <p id="principalEmail"></p>
+                    <p id="principalPhone"></p>
+                </div>
+            </div>
+            <div class="class-info">
+                <h3>Class Information</h3>
+                <div class="class-info-item">
+                    <label for="classSelect">Select Class:</label>
+                    <select id="classSelect">
+                        <option value="1">Class 1</option>
+                        <option value="2">Class 2</option>
+                        <option value="3">Class 3</option>
+                        <option value="4">Class 4</option>
+                        <option value="5">Class 5</option>
+                        <option value="6">Class 6</option>
+                        <option value="7">Class 7</option>
+                        <option value="8">Class 8</option>
+                    </select>
+                </div>
+                <div class="class-info-item">
+                    <span class="class-info-label">Class:</span>
+                    <span class="class-info-value" id="classSelected">Loading...</span>
+                </div>
+                <div class="class-info-item">
+                    <span class="class-info-label">Working Days:</span>
+                    <span class="class-info-value" id="workingDays">Loading...</span>
+                </div>
+                <div class="class-info-item">
+                    <span class="class-info-label">Pass Threshold:</span>
+                    <span class="class-info-value" id="attendanceThreshold">Loading...</span>
+                </div>
+                <div class="class-info-item">
+                    <span class="class-info-label">Start Date:</span>
+                    <span class="class-info-value" id="startDate">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Attendance Charts Row -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Today's Attendance Status</h3>
+                    <span id="attendanceStatusDate"></span>
+                </div>
+                <div id="attendanceStatusLoading" class="loading">Loading attendance data...</div>
+                <div id="attendanceStatusError" class="error" style="display: none;"></div>
+                <div id="attendanceStatusChartContainer" class="chart-container" style="display: none;">
+                    <canvas id="attendanceStatusChart"></canvas>
+                </div>
+                <div id="attendanceStatusNoData" class="no-data" style="display: none;">No attendance data available for
+                    today</div>
+            </div>
+
+            <!-- Today's Attendance Tables -->
+            <div class="grid-row">
+                <!-- Present Students -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="presentTitle">Present Students - 0</h3>
+                        <span id="presentDate"></span>
+                    </div>
+                    <input type="text" id="presentSearch" placeholder="Search by name or ID...">
+                    <div id="presentLoading" class="loading">Loading present students...</div>
+                    <div id="presentError" class="error" style="display: none;"></div>
+                    <div id="presentNoData" class="no-data" style="display: none;">No students present today</div>
+                    <div id="presentNoSearchResults" class="no-data" style="display: none;">No such student found</div>
+                    <div id="presentTableContainer" class="table-container" style="display: none;">
+                        <table class="attendance-table" id="presentTable">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="presentTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Absent Students -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" id="absentTitle">Absent Students - 0</h3>
+                        <span id="absentDate"></span>
+                    </div>
+                    <input type="text" id="absentSearch" placeholder="Search by name or ID...">
+                    <div id="absentLoading" class="loading">Loading absent students...</div>
+                    <div id="absentError" class="error" style="display: none;"></div>
+                    <div id="absentNoData" class="no-data" style="display: none;">No students absent today</div>
+                    <div id="absentNoSearchResults" class="no-data" style="display: none;">No such student found</div>
+                    <div id="absentTableContainer" class="table-container" style="display: none;">
+                        <table class="attendance-table" id="absentTable">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="absentTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Percentage -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Attendance Percentage</h3>
+                </div>
+                <div id="attendancePercentageLoading" class="loading">Loading attendance data...</div>
+                <div id="attendancePercentageError" class="error" style="display: none;"></div>
+                <div id="attendancePercentageChartContainer" class="chart-container" style="display: none;">
+                    <canvas id="attendancePercentageChart"></canvas>
+                </div>
+                <div id="attendancePercentageNoData" class="no-data" style="display: none;">No attendance data available
+                </div>
+            </div>
+
+            <!-- Predicted Grades -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Predicted Final Grades</h3>
+                </div>
+                <div id="gradesLoading" class="loading">Loading grade data...</div>
+                <div id="gradesError" class="error" style="display: none;"></div>
+                <div id="gradesNoData" class="no-data" style="display: none;">Predict the Final Grade First</div>
+                <div id="gradesChartContainer" class="chart-container" style="display: none;">
+                    <canvas id="gradesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid-row">
+                <!-- At-Risk Students -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">At-Risk Students (Bottom 10)</h3>
+                    </div>
+                    <div id="atRiskLoading" class="loading">Loading at-risk students...</div>
+                    <div id="atRiskError" class="error" style="display: none;"></div>
+                    <div id="atRiskNoData" class="no-data" style="display: none;">No at-risk students identified</div>
+                    <div id="atRiskList" class="student-list" style="display: none;"></div>
+                </div>
+
+                <!-- Top Performing Students -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Performing Students (Top 5)</h3>
+                    </div>
+                    <div id="topStudentsLoading" class="loading">Loading top students...</div>
+                    <div id="topStudentsError" class="error" style="display: none;"></div>
+                    <div id="topStudentsNoData" class="no-data" style="display: none;">No top students identified</div>
+                    <div id="topStudentsList" class="student-list" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="grid-row">
+                <!-- Student Grade Comparison -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Student Grade Comparison</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentSelect">Select Student:</label>
+                        <select id="studentSelect"></select>
+                    </div>
+                    <div id="comparisonLoading" class="loading">Select a student to view grade comparison</div>
+                    <div id="comparisonError" class="error" style="display: none;"></div>
+                    <div id="comparisonChartContainer" class="chart-container" style="display: none;">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Behavior Insights -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Behavior Insights</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="behaviorStudentSelect">Select Student:</label>
+                        <select id="behaviorStudentSelect">
+                            <option value="all">All Students</option>
+                        </select>
+                    </div>
+                    <div id="behaviorLoading" class="loading">Loading behavior insights...</div>
+                    <div id="behaviorError" class="error" style="display: none;"></div>
+                    <div id="behaviorChartContainer" class="chart-container" style="display: none;">
+                        <canvas id="behaviorChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="../assets/js/data.js"></script>
+    <script src="../assets/js/principal/dashboard.js"></script>
+</body>
+
+</html>

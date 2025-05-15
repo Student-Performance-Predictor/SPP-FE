@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 hideLoader();
             });
     }
-    
+
     // Event Listeners for navbar and footer
     function addEventListenerFunc() {
         const currentPath = window.location.pathname.split(/[?#]/)[0];
@@ -428,9 +428,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (typeof error === 'string') {
             errorMessage = error;
         }
-    
+
         alert(errorMessage);
-    }    
+    }
 
     // Initialize the page
     init();
