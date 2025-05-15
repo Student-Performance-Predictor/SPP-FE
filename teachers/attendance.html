@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMet - Attendance Management</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/root.css">
+    <link rel="stylesheet" href="../assets/css/teacher/attendance.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../assets/js/validate.js"></script>
+</head>
+
+<body>
+    <div id="teacher_navbar"></div>
+
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-info">
+                <h2>Attendance Management</h2>
+                <p id="class-info">Class: Loading...</p>
+            </div>
+            <div class="date-selector">
+                <span>View Attendance For:</span>
+                <select id="date-select">
+                    <!-- Dates will be populated dynamically -->
+                </select>
+            </div>
+        </header>
+
+        <div class="class-stats">
+            <div class="stat-card">
+                <h3>Total Students</h3>
+                <p id="total-students">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Present Today</h3>
+                <p id="present-today">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Absent Today</h3>
+                <p id="absent-today">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Working Days</h3>
+                <p id="working-days">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Start Date</h3>
+                <p id="start-date">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Threshold</h3>
+                <p id="threshold">-</p>
+            </div>
+        </div>
+
+        <div class="class-config">
+            <div class="config-item">
+                <label for="working-days-input">Total Working Days</label>
+                <input type="number" id="working-days-input" min="1">
+            </div>
+            <div class="config-item">
+                <label for="start-date-input">Start Date</label>
+                <input type="date" id="start-date-input">
+            </div>
+            <div class="config-item">
+                <label for="threshold-input">Threshold (%)</label>
+                <input type="number" id="threshold-input" min="1" max="100">
+            </div>
+            <button class="update-config-btn" id="update-config">Update Class Config</button>
+        </div>
+
+        <div class="bulk-actions">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="student-search" placeholder="Search students by ID, name, or status..."
+                    oninput="searchStudents()">
+            </div>
+            <label>Bulk Action:</label>
+            <select id="bulk-status" class="bulk-select">
+                <option value="not_marked">Not Marked</option>
+                <option value="present">Mark All Present</option>
+                <option value="absent">Mark All Absent</option>
+            </select>
+            <button id="apply-bulk" class="apply-bulk-btn">Apply</button>
+        </div>
+
+        <div class="attendance-table-container">
+            <table id="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Attendance Status</th>
+                        <th>Present Days</th>
+                        <th>Attendance %</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-table-body">
+                    <!-- Attendance data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="attendance-actions">
+            <button class="action-btn save-btn" id="save-attendance">Save Attendance</button>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Send Attendance Alert</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to send an attendance alert to <span id="student-name-modal"></span>?</p>
+                <p>This will notify the student and their parents about low attendance.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn">Cancel</button>
+                <button class="modal-btn confirm-btn" id="confirm-alert">Send Alert</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="../assets/js/data.js"></script>
+    <script src="../assets/js/teacher/attendance.js"></script>
+
+</body>
+
+</html>
