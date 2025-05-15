@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMet - Student Management</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/root.css">
+    <link rel="stylesheet" href="../assets/css/teacher/students.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../assets/js/validate.js"></script>
+</head>
+
+<body>
+    <div id="teacher_navbar"></div>
+
+    <div id="loader">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Student Management</h1>
+            <div class="button-group">
+                <form id="importForm" class="import-form">
+                    <input type="file" id="studentsFile" accept=".csv" />
+                    <label for="studentsFile" class="file-upload-btn btn btn-secondary">
+                        <i class="fas fa-file-import"></i>
+                        <span class="btn-text">Import CSV</span>
+                    </label>
+                    <span class="file-name" id="fileName">No file selected</span>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload"></i>
+                        <span class="btn-text">Upload</span>
+                    </button>
+                </form>
+                <button id="exportStudentsBtn" class="btn btn-secondary">
+                    <i class="fas fa-file-export"></i> <span class="btn-text">Export</span>
+                </button>
+                <button id="addStudentBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> <span class="btn-text">Add Student</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Add this modal for import results -->
+        <div id="importResultModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Import Results</h3>
+                <div id="importResultsContent"></div>
+            </div>
+        </div>
+
+        <div class="school-info">
+            <h3 id="schoolName">Loading school information...</h3>
+            <p>Class: <span id="className">Loading...</span></p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input"
+                placeholder="Search students by name, ID, email, or phone..." autocomplete="off">
+        </div>
+        <div class="table-container">
+            <table id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Student ID</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Loading students data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="emptySpace"></div>
+
+        <!-- Add/Edit Student Modal -->
+        <div id="studentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Add New Student</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="studentForm">
+                    <input type="hidden" id="studentId">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="fullName">Full Name *</label>
+                                <input type="text" class="form-control" id="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentIdInput">Student ID *</label>
+                                <input type="text" class="form-control" id="studentIdInput" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone *</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="school">School</label>
+                                <input type="text" class="form-control" id="school" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="class_assigned">Class</label>
+                                <input type="text" class="form-control" id="class_assigned" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="attendance">Attendance Percentage *</label>
+                                <input type="number" class="form-control" id="attendance" min="0" max="100" step="0.1"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Additional Information</h3>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="parental_education">Parental Education Level (1-4) *</label>
+                                <input type="number" class="form-control" id="parental_education" min="1" max="4"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="study_hours">Weekly Study Hours *</label>
+                                <input type="number" class="form-control" id="study_hours" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="failures">Number of Past Failures *</label>
+                                <input type="number" class="form-control" id="failures" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="extracurricular">Extracurricular Activities *</label>
+                                <select class="form-control" id="extracurricular" required>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="participation">Participation Score (0-10) *</label>
+                                <input type="number" class="form-control" id="participation" min="0" max="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="rating">Teacher Rating (1-5) *</label>
+                                <input type="number" class="form-control" id="rating" min="1" max="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="discipline">Discipline Issues (0-5) *</label>
+                                <input type="number" class="form-control" id="discipline" min="0" max="5" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="late_submissions">Late Submissions *</label>
+                                <input type="number" class="form-control" id="late_submissions" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prev_grade1">Previous Grade 1 (0-100) *</label>
+                                <input type="number" class="form-control" id="prev_grade1" min="0" max="100" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="prev_grade2">Previous Grade 2 (0-100) *</label>
+                                <input type="number" class="form-control" id="prev_grade2" min="0" max="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="final_grade">Final Grade (Predicted)</label>
+                                <input type="number" class="form-control" id="final_grade" value="0" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn">
+                            <i class="fas fa-save"></i> <span class="btn-text">Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Student Modal -->
+        <div id="viewStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Student Details</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div id="studentDetails">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <div class="view-field" id="viewFullName"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Student ID</label>
+                                <div class="view-field" id="viewStudentId"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <div class="view-field" id="viewEmail"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <div class="view-field" id="viewPhone"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Attendance Percentage</label>
+                                <div class="view-field" id="viewAttendance"></div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>School</label>
+                                <div class="view-field" id="viewSchool"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Class</label>
+                                <div class="view-field" id="viewClass"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Parental Education Level</label>
+                                <div class="view-field" id="viewParentalEducation"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Weekly Study Hours</label>
+                                <div class="view-field" id="viewStudyHours"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Past Failures</label>
+                                <div class="view-field" id="viewFailures"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Extracurricular Activities</label>
+                                <div class="view-field" id="viewExtracurricular"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Participation Score</label>
+                                <div class="view-field" id="viewParticipation"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Teacher Rating</label>
+                                <div class="view-field" id="viewRating"></div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Discipline Issues</label>
+                                <div class="view-field" id="viewDiscipline"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Late Submissions</label>
+                                <div class="view-field" id="viewLateSubmissions"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Final Grade (Predicted)</label>
+                                <div class="view-field" id="viewFinalGrade"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Previous Grade 1</label>
+                                <div class="view-field" id="viewPrevGrade1"></div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Previous Grade 2</label>
+                                <div class="view-field" id="viewPrevGrade2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger closeViewModal">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="/assets/js/data.js"></script>
+    <script src="/assets/js/teacher/students.js"></script>
+</body>
+
+</html>
