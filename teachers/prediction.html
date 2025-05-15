@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMet - Final Grade Prediction</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/root.css">
+    <link rel="stylesheet" href="../assets/css/teacher/prediction.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../assets/js/validate.js"></script>
+</head>
+
+<body>
+    <div id="teacher_navbar"></div>
+
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Student Final Grade Prediction</h1>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="importCsvBtn">
+                    <i class="fas fa-file-import"></i> Import CSV
+                </button>
+                <button class="btn btn-success" id="uploadCsvBtn" style="display: none;">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                </button>
+                <button class="btn btn-danger" id="resetGradesBtn">
+                    <i class="fas fa-undo"></i> Reset Grades
+                </button>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput"
+                placeholder="Search students by name, ID, email, phone...">
+        </div>
+
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Final Grade</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+                <!-- Students will be loaded here -->
+                <tr>
+                    <td colspan="7" style="text-align: center;">Loading students...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+
+    <div class="emptySpace"></div>
+
+    <!-- Student Details Modal -->
+    <div class="modal" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Student Details</h3>
+                <button class="btn btn-danger btn-sm" id="closeModal"><i class="fas fa-times"></i> Close</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Student details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancelModal"><i class="fas fa-times"></i> Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add confirmation modal for reset -->
+    <div class="modal" id="resetConfirmModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Confirm Reset</h3>
+                <button class="btn btn-danger btn-sm" id="closeResetModal"><i class="fas fa-times"></i> Close</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset all final grades to 0?</p>
+                <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelReset"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-danger" id="confirmReset">
+                    <i class="fas fa-undo"></i> Confirm Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="../assets/js/data.js"></script>
+    <script src="../assets/js/teacher/prediction.js"></script>
+</body>
+
+</html>
