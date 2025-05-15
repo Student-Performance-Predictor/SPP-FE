@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMet - Anonymous Predict</title>
+    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/root.css">
+    <link rel="stylesheet" href="../assets/css/randomPredict.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../assets/js/validate.js"></script>
+</head>
+<body>
+    <div id="teacher_navbar"></div>
+
+    <div id="loader" style="display: none;">
+        <div class="loader-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1>Student Grade Predictor</h1>
+        
+        <button id="randomizeBtn" class="randomize-btn">Generate Random Student</button>
+        
+        <form id="predictionForm">
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="attendance">Attendance Percentage</label>
+                        <input type="number" id="attendance" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentalEducation">Parental Education Level (1-4)</label>
+                        <input type="number" id="parentalEducation" min="1" max="4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studyHours">Study Hours Per Week</label>
+                        <input type="number" id="studyHours" min="0" required>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="failures">Number of Past Failures</label>
+                        <input type="number" id="failures" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="discipline">Discipline Issues (0-5)</label>
+                        <input type="number" id="discipline" min="0" max="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lateSubmissions">Late Submissions</label>
+                        <input type="number" id="lateSubmissions" min="0" required>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="extracurricular">Extracurricular Activities</label>
+                        <select id="extracurricular" required>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="participation">Class Participation Score (1-10)</label>
+                        <input type="number" id="participation" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherRating">Teacher Rating (1-5)</label>
+                        <input type="number" id="teacherRating" min="1" max="5" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row-centered">
+                <div class="form-col-centered">
+                    <div class="form-group">
+                        <label for="prevGrade1">Previous Grade 1 (0-100)</label>
+                        <input type="number" id="prevGrade1" min="0" max="100" required>
+                    </div>
+                </div>
+                <div class="form-col-centered">
+                    <div class="form-group">
+                        <label for="prevGrade2">Previous Grade 2 (0-100)</label>
+                        <input type="number" id="prevGrade2" min="0" max="100" required>
+                    </div>
+                </div>
+            </div>
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Predicting grade...</p>
+            </div>
+            <div class="error" id="predictionError"></div>
+            <button type="submit">Predict Final Grade</button>
+        </form>
+        
+        <div class="result-container" id="resultContainer">
+            <h3>Predicted Final Grade</h3>
+            <div id="predictedGrade" class="final-grade"></div>
+            <p id="gradeInterpretation"></p>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="../assets/js/data.js"></script>
+    <script src="../assets/js/teacher/randomPredict.js"></script>
+</body>
+</html>
