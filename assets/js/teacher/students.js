@@ -165,7 +165,7 @@ function fetchTeacherInfo() {
         .then((data) => {
             teacherInfo = data;
             const profileImageUrl = data.profile_image
-                ? `${baseUrl}/${data.profile_image}/`
+                ? `${baseUrl}${data.profile_image}/`
                 : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMggZhOIH1vXmnv0bCyBu8iEuYQO-Dw1kpp7_v2mwhw_SKksetiK0e4VWUak3pm-v-Moc&usqp=CAU";
             // Update profile image in main content
             profileImageEl.src = profileImageUrl;

@@ -115,7 +115,7 @@ function fetchTeacherInfo() {
         })
         .then(data => {
             const profileImageUrl = data.profile_image
-                ? `${baseUrl}/${data.profile_image}/`
+                ? `${baseUrl}${data.profile_image}/`
                 : "https://via.placeholder.com/80";
             profileImageEl.src = profileImageUrl;
             const navbarProfileImg = document.getElementById("profileImage");

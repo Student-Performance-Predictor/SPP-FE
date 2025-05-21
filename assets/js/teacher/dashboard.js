@@ -27,7 +27,7 @@ async function initDashboard() {
 
         teacherData = await fetchTeacherInfo();
         const profileImageUrl = teacherData.profile_image
-            ? `${baseUrl}/${teacherData.profile_image}/`
+            ? `${baseUrl}${teacherData.profile_image}/`
             : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMggZhOIH1vXmnv0bCyBu8iEuYQO-Dw1kpp7_v2mwhw_SKksetiK0e4VWUak3pm-v-Moc&usqp=CAU";
         profileImageEl.src = profileImageUrl;
         const navbarProfileImg = document.getElementById("profileImage");
@@ -257,7 +257,7 @@ function updateTeacherUI(data) {
     if (data.profile_image) {
         document.getElementById(
             "teacherAvatar"
-        ).src = `${baseUrl}/${data.profile_image}/`;
+        ).src = `${baseUrl}${data.profile_image}/`;
     } else {
         document.getElementById("teacherAvatar").src =
             "https://via.placeholder.com/80";
