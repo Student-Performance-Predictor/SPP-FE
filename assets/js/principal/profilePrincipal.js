@@ -1,4 +1,4 @@
-// DOM elements
+// DOM elements (Add the MFA elements)
 const profileImageEl = document.getElementById("profileImage");
 const imageUploadEl = document.getElementById("imageUpload");
 const nameEl = document.getElementById("name");
@@ -19,8 +19,11 @@ const cancelBtn = document.getElementById("cancelBtn");
 const saveBtnText = document.getElementById("saveBtnText");
 const passwordBtnText = document.getElementById("passwordBtnText");
 const loader = document.getElementById("loader");
+const mfaToggleEl = document.getElementById("mfaToggle"); // Add this
+const mfaStatusEl = document.getElementById("mfaStatus"); // Add this
 let principalId = null;
 let schoolId = null;
+let mfaEnabled = false; // Track MFA status
 const baseUrl = BE_URL;
 
 // Show/hide loader
@@ -58,6 +61,11 @@ function showAlert(message, isError = false) {
     }
 }
 
+// Show confirmation dialog
+function showConfirmation(message) {
+    return confirm(message);
+}
+
 // Fetch principal data using access token
 function fetchPrincipalData() {
     const accessToken = getAccessToken();
@@ -83,6 +91,7 @@ function fetchPrincipalData() {
             return response.json();
         })
         .then((data) => {
+            console.log(data)
             principalId = data.id;
             schoolId = data.school_id;
             const profileImageUrl = data.profile_image
@@ -105,6 +114,10 @@ function fetchPrincipalData() {
             cityEl.value = data.city || "";
             stateEl.value = data.state || "";
             pincodeEl.value = data.pincode || "";
+            
+            // Set MFA status
+            mfaEnabled = data.mfa_enabled || false;
+            updateMFAUI();
         })
         .catch((error) => {
             showAlert(error.message, true);
@@ -113,6 +126,78 @@ function fetchPrincipalData() {
         .finally(() => {
             showLoader(false);
             saveBtnText.textContent = "Save Changes";
+        });
+}
+
+// Update MFA UI
+function updateMFAUI() {
+    if (mfaToggleEl) {
+        mfaToggleEl.checked = mfaEnabled;
+    }
+    
+    if (mfaStatusEl) {
+        mfaStatusEl.textContent = mfaEnabled ? "Enabled" : "Disabled";
+        mfaStatusEl.className = `status ${mfaEnabled ? "enabled" : "disabled"}`;
+    }
+}
+
+// Handle MFA toggle
+function toggleMFA() {
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+        showAlert("Authentication required. Please login.", true);
+        return;
+    }
+
+    if (!principalId) {
+        showAlert("Principal ID not found", true);
+        return;
+    }
+
+    const newMFAStatus = mfaToggleEl.checked;
+    const action = newMFAStatus ? "enable" : "disable";
+    
+    if (!showConfirmation(`Are you sure you want to ${action} Multi-Factor Authentication?`)) {
+        // Revert toggle if user cancels
+        mfaToggleEl.checked = mfaEnabled;
+        return;
+    }
+
+    showLoader(true);
+    
+    fetch(`${baseUrl}/MFAPrincipal/${principalId}/`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+            id: principalId,
+            mfa_enabled: newMFAStatus
+        }),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                return response.json().then((err) => {
+                    throw new Error(err.error || "Failed to update MFA settings");
+                });
+            }
+            return response.json();
+        })
+        .then((data) => {
+            mfaEnabled = newMFAStatus;
+            updateMFAUI();
+            showAlert(`Multi-Factor Authentication ${newMFAStatus ? "enabled" : "disabled"} successfully!`);
+        })
+        .catch((error) => {
+            // Revert UI on error
+            mfaToggleEl.checked = mfaEnabled;
+            updateMFAUI();
+            showAlert(error.message, true);
+            console.error("Error updating MFA:", error);
+        })
+        .finally(() => {
+            showLoader(false);
         });
 }
 
@@ -159,6 +244,7 @@ function saveProfileChanges() {
     formData.append("city", cityEl.value);
     formData.append("state", stateEl.value);
     formData.append("pincode", pincodeEl.value);
+    formData.append("mfa_enabled", mfaEnabled); // Include MFA status
 
     // Add the image file if changed
     if (imageUploadEl.files[0]) {
@@ -289,6 +375,11 @@ cancelBtn.addEventListener("click", () => {
     // Reset form to original values
     fetchPrincipalData();
 });
+
+// Add MFA toggle event listener
+if (mfaToggleEl) {
+    mfaToggleEl.addEventListener("change", toggleMFA);
+}
 
 document.querySelectorAll(".password-toggle").forEach((button) => {
     button.addEventListener("click", function () {
