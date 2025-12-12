@@ -20,10 +20,13 @@ const cancelBtn = document.getElementById("cancelBtn");
 const saveBtnText = document.getElementById("saveBtnText");
 const passwordBtnText = document.getElementById("passwordBtnText");
 const loader = document.getElementById("loader");
+const mfaToggleEl = document.getElementById("mfaToggle"); // Add MFA toggle
+const mfaStatusEl = document.getElementById("mfaStatus"); // Add MFA status
 
 // Global variables
 let teacherId = null;
 let schoolId = null;
+let mfaEnabled = false; // Track MFA status
 const baseUrl = BE_URL;
 
 // Show/hide loader
@@ -59,6 +62,11 @@ function showAlert(message, isError = false) {
     } else {
         alert(message);
     }
+}
+
+// Show confirmation dialog
+function showConfirmation(message) {
+    return confirm(message);
 }
 
 // Fetch teacher data using access token
@@ -108,6 +116,10 @@ function fetchTeacherData() {
             cityEl.value = data.city || "";
             stateEl.value = data.state || "";
             pincodeEl.value = data.pincode || "";
+            
+            // Set MFA status if available from API
+            mfaEnabled = data.mfa_enabled || false;
+            updateMFAUI();
         })
         .catch((error) => {
             showAlert(error.message, true);
@@ -116,6 +128,77 @@ function fetchTeacherData() {
         .finally(() => {
             showLoader(false);
             saveBtnText.textContent = "Save Changes";
+        });
+}
+
+// Update MFA UI
+function updateMFAUI() {
+    if (mfaToggleEl) {
+        mfaToggleEl.checked = mfaEnabled;
+    }
+    
+    if (mfaStatusEl) {
+        mfaStatusEl.textContent = mfaEnabled ? "Enabled" : "Disabled";
+        mfaStatusEl.className = `status ${mfaEnabled ? "enabled" : "disabled"}`;
+    }
+}
+
+// Handle MFA toggle - Using PATCH endpoint
+function toggleMFA() {
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+        showAlert("Authentication required. Please login.", true);
+        return;
+    }
+
+    if (!teacherId) {
+        showAlert("Teacher ID not found", true);
+        return;
+    }
+
+    const newMFAStatus = mfaToggleEl.checked;
+    const action = newMFAStatus ? "enable" : "disable";
+    
+    if (!showConfirmation(`Are you sure you want to ${action} Multi-Factor Authentication?`)) {
+        // Revert toggle if user cancels
+        mfaToggleEl.checked = mfaEnabled;
+        return;
+    }
+
+    showLoader(true);
+    
+    fetch(`${baseUrl}/MFAClassTeacher/${teacherId}/`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+            mfa_enabled: newMFAStatus
+        }),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                return response.json().then((err) => {
+                    throw new Error(err.error || `Failed to ${action} MFA`);
+                });
+            }
+            return response.json();
+        })
+        .then((data) => {
+            mfaEnabled = newMFAStatus;
+            updateMFAUI();
+            showAlert(`Multi-Factor Authentication ${newMFAStatus ? "enabled" : "disabled"} successfully!`);
+        })
+        .catch((error) => {
+            // Revert UI on error
+            mfaToggleEl.checked = mfaEnabled;
+            updateMFAUI();
+            showAlert(error.message, true);
+            console.error("Error updating MFA:", error);
+        })
+        .finally(() => {
+            showLoader(false);
         });
 }
 
@@ -157,7 +240,7 @@ function saveProfileChanges() {
     formData.append("phone", phoneEl.value);
     formData.append("school", schoolEl.value);
     formData.append("school_id", schoolId);
-    formData.append("class_assigned", classAssignedEl.value.split(' ')[1]);
+    formData.append("class_assigned", classAssignedEl.value.split(' ')[1] || "");
     formData.append("address", addressEl.value);
     formData.append("city", cityEl.value);
     formData.append("state", stateEl.value);
@@ -292,6 +375,11 @@ cancelBtn.addEventListener("click", () => {
     // Reset form to original values
     fetchTeacherData();
 });
+
+// Add MFA toggle event listener
+if (mfaToggleEl) {
+    mfaToggleEl.addEventListener("change", toggleMFA);
+}
 
 document.querySelectorAll(".password-toggle").forEach((button) => {
     button.addEventListener("click", function () {
